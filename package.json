@@ -1,0 +1,24 @@
+{
+  "name": "fintrapay",
+  "version": "0.1.0",
+  "description": "Node.js SDK for FintraPay crypto payment gateway",
+  "main": "src/index.js",
+  "license": "MIT",
+  "author": "FintraPay <support@fintrapay.io>",
+  "homepage": "https://fintrapay.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Fintra-Ltd/fintrapay-node"
+  },
+  "keywords": [
+    "crypto",
+    "payments",
+    "stablecoin",
+    "USDT",
+    "USDC",
+    "gateway"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
