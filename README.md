@@ -2,11 +2,19 @@
 
 Official Node.js SDK for the [FintraPay](https://fintrapay.io) crypto payment gateway API. Accept stablecoin payments, payment links, subscriptions, deposit API, payouts, withdrawals, and earn yield -- all with automatic HMAC-SHA256 request signing.
 
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://www.npmjs.com/package/fintrapay)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://www.npmjs.com/package/fintrapay)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Node](https://img.shields.io/badge/node-14%2B-blue.svg)](https://nodejs.org/)
 
 ---
+
+> ## ⚠️ v0.2.0 — Breaking change to webhook verification
+>
+> The webhook signature verifier now requires the `X-FintraPay-Timestamp` header
+> to support the v2 webhook envelope (`HMAC(timestamp + "\n" + body)`). Versions
+> prior to 0.2.0 silently rejected every legitimate v2 delivery.
+>
+> See [CHANGELOG.md](CHANGELOG.md) for the migration in your language.
 
 ## Installation
 
@@ -53,7 +61,7 @@ app.post('/webhooks/fintrapay',
   express.raw({ type: 'application/json' }),
   (req, res) => {
     const sig = req.headers['x-fintrapay-signature'];
-    if (!verifyWebhookSignature(req.body, sig, process.env.WEBHOOK_SECRET)) {
+    if (!verifyWebhookSignature(req.body, sig, process.env.WEBHOOK_SECRET, { timestamp: req.headers['x-fintrapay-timestamp'] })) {
       return res.status(401).json({ error: 'Invalid signature' });
     }
     const event = JSON.parse(req.body);
@@ -228,7 +236,7 @@ app.post('/webhooks/fintrapay',
   express.raw({ type: 'application/json' }),
   (req, res) => {
     const sig = req.headers['x-fintrapay-signature'];
-    if (!verifyWebhookSignature(req.body, sig, process.env.WEBHOOK_SECRET)) {
+    if (!verifyWebhookSignature(req.body, sig, process.env.WEBHOOK_SECRET, { timestamp: req.headers['x-fintrapay-timestamp'] })) {
       return res.status(401).json({ error: 'Invalid signature' });
     }
     const event = JSON.parse(req.body);
