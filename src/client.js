@@ -228,10 +228,12 @@ class FintraPay {
    * @param {string} [opts.reference]
    * @returns {Promise<Object>}
    */
-  createPayout({ toAddress, amount, currency, blockchain, reason, reference } = {}) {
+  createPayout({ toAddress, amount, currency, blockchain, reason, reference, feeDeduction } = {}) {
     const body = { to_address: toAddress, amount, currency, blockchain };
     if (reason !== undefined) body.reason = reason;
     if (reference !== undefined) body.reference = reference;
+    // "from_amount" (default) or "from_balance" — see createWithdrawal.
+    if (feeDeduction !== undefined) body.fee_deduction = feeDeduction;
     return this._request('POST', '/payouts', body);
   }
 
@@ -287,8 +289,14 @@ class FintraPay {
    * @param {string} opts.blockchain
    * @returns {Promise<Object>}
    */
-  createWithdrawal({ amount, currency, blockchain } = {}) {
-    return this._request('POST', '/withdrawals', { amount, currency, blockchain });
+  createWithdrawal({ amount, currency, blockchain, toAddress, feeDeduction } = {}) {
+    const body = { amount, currency, blockchain };
+    // Defaults to the wallet registered for this chain on your profile.
+    if (toAddress !== undefined) body.to_address = toAddress;
+    // "from_amount" (default): recipient gets amount minus fees.
+    // "from_balance": recipient gets exactly amount, fees debited on top.
+    if (feeDeduction !== undefined) body.fee_deduction = feeDeduction;
+    return this._request('POST', '/withdrawals', body);
   }
 
   /**
